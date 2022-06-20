@@ -99,7 +99,7 @@ address payable private owner;
      
     constructor(address country) {
         countryAddress = country;
-        owner = payable(msg.sender);
+        owner = payable(0x5B38Da6a701c568545dCfcB03FcB875f56beddC4);
     }
 
     event ErrorLogging(string reason);
@@ -115,22 +115,22 @@ address payable private owner;
 
 
     function changeGoverment(address newAddress, string calldata newCountryName)  external  {
-        bool success;
-        bytes memory data = abi.encodeWithSelector(FUNC_SELECTOR, newAddress, newCountryName);
+        // bool success;
+        // bytes memory data = abi.encodeWithSelector(FUNC_SELECTOR, newAddress, newCountryName);
 
-        assembly {
-            success := call(
-                gas(),            // gas remaining
-                newAddress,         // destination address
-                0,              // no ether
-                add(data, 32),  // input buffer (starts after the first 32 bytes in the `data` array)
-                mload(data),    // input length (loaded from the first 32 bytes in the `data` array)
-                0,              // output buffer
-                0               // output length
-            )
-        }
+        // assembly {
+        //     success := call(
+        //         gas(),            // gas remaining
+        //         newAddress,         // destination address
+        //         0,              // no ether
+        //         add(data, 32),  // input buffer (starts after the first 32 bytes in the `data` array)
+        //         mload(data),    // input length (loaded from the first 32 bytes in the `data` array)
+        //         0,              // output buffer
+        //         0               // output length
+        //     )
+        // }
 
-        require(success, "hehe boooy");
+        // require(success, "hehe boooy");
 
         DigitalCountry country = DigitalCountry(countryAddress);
         require(country.getUser(msg.sender).userType == 1, "only the president can add members");
@@ -139,9 +139,7 @@ address payable private owner;
         // }
         country.changeContryName(newCountryName);
         country.changeFormOfGoverment(newAddress); 
-        // address  _addr = payable(this);
 
-        payable(newAddress).transfer(address(this).balance);
         selfdestruct(owner);
         
     }
@@ -156,18 +154,7 @@ address payable private owner;
 
 contract anotherFormOfGoverment {
     //проверка на то, есть ли тут определенные функции
-
-   // changeGoverment
-    
  function changeGoverment(address newAddress, string calldata newCountryName)  external {}
-
-// uint public e;
-//     function detectTransferRestriction(address  addr,address ad,uint256 u) public {
-//         if(u != 10){
-//             e = u;
-//         }
-        
-//     }
 }
 
 
