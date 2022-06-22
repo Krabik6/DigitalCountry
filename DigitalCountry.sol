@@ -17,18 +17,18 @@ contract DigitalCountry{
     mapping(address => User) public users;
     string name;
     uint version = 0;
-    address formOfGovermentContract;
+    address formOfGovernmentContract;
     CountryToken public _CountryToken;
      news _news;
-     address newsAddresss;
+     address newsAddress;
     
 
     constructor(string memory _name, string memory creatorName) {
-        BoeingFormOfGoverment boeingGoverment = new BoeingFormOfGoverment(address(this));
+        BoeingFormOfGovernment boeingGovernment = new BoeingFormOfGovernment(address(this));
         _CountryToken = new CountryToken();
 
 
-        formOfGovermentContract = address(boeingGoverment);
+        formOfGovernmentContract = address(boeingGovernment);
         name = _name;
 
         User storage user = users[msg.sender];
@@ -40,15 +40,14 @@ contract DigitalCountry{
         _CountryToken.safeMint(msg.sender);
 
         _news = new news(address(this));
-        newsAddresss = address(_news);
-
+        newsAddress = address(_news);
     }
 
     
 
 
-    modifier callerIsFormOfGoverment {
-        require(msg.sender == formOfGovermentContract, "only goverment can control the country");
+    modifier callerIsFormOfGovernment {
+        require(msg.sender == formOfGovernmentContract, "only Government can control the country");
         _;
     }
 
@@ -57,8 +56,8 @@ contract DigitalCountry{
 
 
 
-    function getAddressOfGovermentContract() external view returns(address) {
-        return formOfGovermentContract;
+    function getAddressOfGovernmentContract() external view returns(address) {
+        return formOfGovernmentContract;
     }
 
     function getVersion() external view returns(uint) {
@@ -66,7 +65,7 @@ contract DigitalCountry{
     }
 
         function getAddressNews() external view returns(address) {
-        return newsAddresss;
+        return newsAddress;
     }
     
     function getName() external view returns(string memory) {
@@ -81,7 +80,7 @@ contract DigitalCountry{
         return users[_address];
     }
 
-    function setUser(address _address, User memory newUserData) external callerIsFormOfGoverment {
+    function setUser(address _address, User memory newUserData) external callerIsFormOfGovernment {
         // require();
         User storage user = users[_address];
 
@@ -93,15 +92,15 @@ contract DigitalCountry{
         _CountryToken.safeMint(_address);
     }
 
-    function changeContryName(string memory newName) external callerIsFormOfGoverment {
+    function changeCountryName(string memory newName) external callerIsFormOfGovernment {
         name = newName;
     }
 
-    event changeFormOfGovermentEvent(address newGoverment);
+    event changeFormOfGovernmentEvent(address newGovernment);
 
-    function changeFormOfGoverment(address _formOfGovermentContract) external callerIsFormOfGoverment {
-        formOfGovermentContract = _formOfGovermentContract;
-        emit changeFormOfGovermentEvent(_formOfGovermentContract);
+    function changeFormOfGovernment(address _formOfGovernmentContract) external callerIsFormOfGovernment {
+        formOfGovernmentContract = _formOfGovernmentContract;
+        emit changeFormOfGovernmentEvent(_formOfGovernmentContract);
 
         if(version == type(uint).max) {
             version = 0;
@@ -112,11 +111,11 @@ contract DigitalCountry{
 }
 
 // http://abstractconstruction.com/projects/boeing/
-contract BoeingFormOfGoverment {
+contract BoeingFormOfGovernment {
     address countryAddress;
     address newsAddress;
 
-    bytes4 private constant FUNC_SELECTOR = bytes4(keccak256("changeGoverment(address,stringcalldata)"));
+    bytes4 private constant FUNC_SELECTOR = bytes4(keccak256("changeGovernment(address,stringcalldata)"));
     address payable private owner;
     news _news;
     constructor(address country) {
@@ -145,7 +144,7 @@ contract BoeingFormOfGoverment {
      }
 
 
-    function changeGoverment(address newAddress, string calldata newCountryName)  external  { //очищать историю или нет булеан
+    function changeGovernment(address newAddress, string calldata newCountryName)  external  { //очищать историю или нет булеан
         // bool success;
         // bytes memory data = abi.encodeWithSelector(FUNC_SELECTOR, newAddress, newCountryName);
 
@@ -168,8 +167,8 @@ contract BoeingFormOfGoverment {
         // if(keccak256(abi.encodePacked(newCountryName)) != keccak256(abi.encodePacked(""))){
                 // country.changeContryName(newCountryName); хочу иметь возможность создать страну без имени, ограничение в 3 символа сделать сложно/дорого
         // }
-        country.changeContryName(newCountryName);
-        country.changeFormOfGoverment(newAddress); 
+        country.changeCountryName(newCountryName);
+        country.changeFormOfGovernment(newAddress); 
 
         selfdestruct(owner);
         
@@ -187,9 +186,9 @@ contract BoeingFormOfGoverment {
 
 }
 
-contract anotherFormOfGoverment {
+contract anotherFormOfGovernment {
     //проверка на то, есть ли тут определенные функции
- function changeGoverment(address newAddress, string calldata newCountryName)  external {}
+ function changeGovernment(address newAddress, string calldata newCountryName)  external {}
 }
 
 contract news {
@@ -206,7 +205,7 @@ contract news {
         string header;
         string content;
         uint creationTime;
-        string autorName;
+        string authorName;
     }
 
     event newNews(uint version, structOfNews message);
@@ -215,8 +214,8 @@ contract news {
     mapping(uint => mapping ( uint => structOfNews) ) mapOfNewss;
     structOfNews[] allNewsArray;
 
-    modifier callerIsFormOfGoverment {
-        require(msg.sender == country.getAddressOfGovermentContract(), "only goverment can control the country");
+    modifier callerIsFormOfGovernment {
+        require(msg.sender == country.getAddressOfGovernmentContract(), "only Government can control the country");
         _;
     }
 
@@ -228,7 +227,7 @@ contract news {
             header: _header,
             content: _content,
             creationTime: block.timestamp,
-            autorName: country.getUserName(_address) //msg.sender
+            authorName: country.getUserName(_address) //msg.sender
         });
         allNewsArray.push(mapOfNews[country.getVersion()][id]);
 
