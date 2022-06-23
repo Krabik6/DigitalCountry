@@ -23,7 +23,9 @@ contract DigitalCountry{
     
 
     constructor(string memory _name, string memory creatorName) {
-        BoeingFormOfGovernment boeingGovernment = new BoeingFormOfGovernment(address(this));
+        News news = News(address(this));
+
+        BoeingFormOfGovernment boeingGovernment = new BoeingFormOfGovernment(address(this), address(news));
         _CountryToken = new CountryToken();
 
         currentFormOfGovernment = address(boeingGovernment);
@@ -45,7 +47,7 @@ contract DigitalCountry{
 
 
 
-    function getCountryInfo() external view returns(string, uint, address, string) {
+    function getCountryInfo() external view returns(string memory, uint, address, string memory) {
         return (countryName, version, currentFormOfGovernment, formOfGovernmentName);
     }
 
@@ -56,7 +58,7 @@ contract DigitalCountry{
 
 
 
-    function transferTo(address payable toWho, uint256 howMuch) {
+    function transferTo(address payable toWho, uint256 howMuch) external {
         toWho.transfer(howMuch);
     }
 
@@ -80,7 +82,7 @@ contract DigitalCountry{
         user.userType = newUserData.userType;
     }
 
-    function changeFormOfGovernment(address _currentFormOfGovernment, string _formOfGovernmentName) external callerIsFormOfGovernment {
+    function changeFormOfGovernment(address _currentFormOfGovernment, string calldata _formOfGovernmentName) external callerIsFormOfGovernment {
         currentFormOfGovernment = _currentFormOfGovernment;
         formOfGovernmentName = _formOfGovernmentName;
 
@@ -100,7 +102,7 @@ contract BoeingFormOfGovernment {
 
     constructor(address country, address news) {
         _country = DigitalCountry(country);
-        _news = news(news);
+        _news = News(news);
     }
 
     modifier callerIsPresident {
@@ -109,7 +111,7 @@ contract BoeingFormOfGovernment {
     }
 
     function addUser(address _address, string calldata name, uint _userType, bool isActive) external callerIsPresident {
-        country.setUser(_address, DigitalCountry.User(name, isActive, false, _userType));
+        _country.setUser(_address, DigitalCountry.User(name, isActive, false, _userType));
     }
 
     function changeGovernment(address newGovernment, string calldata newGovernmentName, bool killFreeSpeech) external callerIsPresident {
@@ -119,18 +121,16 @@ contract BoeingFormOfGovernment {
             _news.killFreeSpeech();
         }
 
-        selfdestruct(address(_country));
+        selfdestruct(payable(address(_country)));
     }
 }
 
 contract News {
-    address countryAddress;
+    DigitalCountry _country;
 
-    constructor(address _country){
-        countryAddress = _country;
+    constructor(address countryAddress){
+        _country = DigitalCountry(countryAddress);
     }
-
-    DigitalCountry country = DigitalCountry(countryAddress);
 
     struct structOfNews{
         string header;
@@ -140,20 +140,22 @@ contract News {
     }
 
     event publication(structOfNews entry, uint total);
-    structOfNews[] allNewsArray = new structOfNews[](type(uint).max);
+    structOfNews[] allNewsArray;
 
     modifier callerIsFormOfGovernment {
-        require(msg.sender == country.getAddressOfGovernmentContract(), "only Government can control contract");
+        (string memory countryName, uint countryVersion, address governmentAddress, string memory governmentName) = _country.getCountryInfo();
+
+        require(msg.sender == governmentAddress, "only Government can control contract");
         _;
     }
 
-    function pushNews(string calldata _header, string calldata _content, string calldata authorName) public callerIsFormOfGovernment {
+    function pushNews(string calldata _header, string calldata _content, string memory authorName) public callerIsFormOfGovernment {
         if(allNewsArray.length == type(uint).max) {
             allNewsArray.pop();
         }
 
         if(bytes(authorName).length == 0) {
-            authorName = country.getUser(msg.sender).name;
+            authorName = _country.getUser(msg.sender).name;
         }
 
         allNewsArray.push(structOfNews({
@@ -167,7 +169,7 @@ contract News {
     }
 
     function killFreeSpeech() public callerIsFormOfGovernment {
-        selfdestruct(address(country));
+        selfdestruct(payable(address(_country)));
     }
 
     function getNews(uint page) public view returns(structOfNews[10] memory newsOutput){
