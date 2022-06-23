@@ -4,9 +4,8 @@ import "./NftForCountry.sol";
 
 pragma solidity ^0.8.0;
 
-//теряют ли юзеры свои ранги при смене формы правления
-
 contract DigitalCountry{
+
     struct User{
         string name;
         bool isActive;
@@ -15,21 +14,20 @@ contract DigitalCountry{
     }
 
     mapping(address => User) public users;
-    string name;
+    string countryName;
+    address currentFormOfGovernment;
+    string formOfGovernmentName;
     uint version = 0;
-    address formOfGovernmentContract;
+    // todo copy country stats to ntf
     CountryToken public _CountryToken;
-     news _news;
-     address newsAddress;
     
 
     constructor(string memory _name, string memory creatorName) {
         BoeingFormOfGovernment boeingGovernment = new BoeingFormOfGovernment(address(this));
         _CountryToken = new CountryToken();
 
-
-        formOfGovernmentContract = address(boeingGovernment);
-        name = _name;
+        currentFormOfGovernment = address(boeingGovernment);
+        countryName = _name;
 
         User storage user = users[msg.sender];
         user.name = creatorName;
@@ -38,69 +36,53 @@ contract DigitalCountry{
         user.userType = 1;
 
         _CountryToken.safeMint(msg.sender);
-
-        _news = new news(address(this));
-        newsAddress = address(_news);
     }
 
-    
-
-
     modifier callerIsFormOfGovernment {
-        require(msg.sender == formOfGovernmentContract, "only Government can control the country");
+        require(msg.sender == currentFormOfGovernment, "only Government can control the country");
         _;
     }
 
 
 
-
-
-
-    function getAddressOfGovernmentContract() external view returns(address) {
-        return formOfGovernmentContract;
-    }
-
-    function getVersion() external view returns(uint) {
-        return version;
-    }
-
-        function getAddressNews() external view returns(address) {
-        return newsAddress;
-    }
-    
-    function getName() external view returns(string memory) {
-        return name;
-    }
-
-    function getUserName(address _address) external view returns(string memory) {
-        return users[_address].name;
+    function getCountryInfo() external view returns(string, uint, address, string) {
+        return (countryName, version, currentFormOfGovernment, formOfGovernmentName);
     }
 
     function getUser(address _address) external view returns(User memory)  {
         return users[_address];
     }
 
+
+
+
+    function transferTo(address payable toWho, uint256 howMuch) {
+        toWho.transfer(howMuch);
+    }
+
+    function changeCountryName(string calldata newName) external callerIsFormOfGovernment {
+        countryName = newName;
+    }
+
     function setUser(address _address, User memory newUserData) external callerIsFormOfGovernment {
-        // require();
         User storage user = users[_address];
 
+        require(user.wasActive || newUserData.isActive, "first change must set isActive true");
+
+        // first time user
+        if(!user.wasActive) {
+            _CountryToken.safeMint(_address);
+        }
+
+        user.wasActive = true;
         user.name = newUserData.name;
         user.isActive = newUserData.isActive;
-        user.wasActive = newUserData.wasActive;
         user.userType = newUserData.userType;
-
-        _CountryToken.safeMint(_address);
     }
 
-    function changeCountryName(string memory newName) external callerIsFormOfGovernment {
-        name = newName;
-    }
-
-    event changeFormOfGovernmentEvent(address newGovernment);
-
-    function changeFormOfGovernment(address _formOfGovernmentContract) external callerIsFormOfGovernment {
-        formOfGovernmentContract = _formOfGovernmentContract;
-        emit changeFormOfGovernmentEvent(_formOfGovernmentContract);
+    function changeFormOfGovernment(address _currentFormOfGovernment, string _formOfGovernmentName) external callerIsFormOfGovernment {
+        currentFormOfGovernment = _currentFormOfGovernment;
+        formOfGovernmentName = _formOfGovernmentName;
 
         if(version == type(uint).max) {
             version = 0;
@@ -112,86 +94,36 @@ contract DigitalCountry{
 
 // http://abstractconstruction.com/projects/boeing/
 contract BoeingFormOfGovernment {
-    address countryAddress;
-    address newsAddress;
+    News _news;
+    DigitalCountry _country;
 
-    bytes4 private constant FUNC_SELECTOR = bytes4(keccak256("changeGovernment(address,stringcalldata)"));
-    address payable private owner;
-    news _news;
-    constructor(address country) {
-        countryAddress = country;
-        owner = payable(0x5B38Da6a701c568545dCfcB03FcB875f56beddC4);
-        DigitalCountry country = DigitalCountry(countryAddress);
 
-       _news = news(country.getAddressNews());
+    constructor(address country, address news) {
+        _country = DigitalCountry(country);
+        _news = news(news);
     }
 
-    event ErrorLogging(string reason);
-
-
-    function addUser(address _address, string calldata name, uint _userType) external {
-        DigitalCountry country = DigitalCountry(countryAddress);
-
-        require(country.getUser(msg.sender).userType == 1, "only the president can add members");
-
-        country.setUser(_address, DigitalCountry.User(name, true, false, _userType));
+    modifier callerIsPresident {
+        require(_country.getUser(msg.sender).userType == 1, "only the president can call this");
+        _;
     }
 
-    // function change own name
-
-         function createNews(string calldata _header, string calldata _content, address _address) public {
-         _news.createNews(_header, _content, _address);
-     }
-
-
-    function changeGovernment(address newAddress, string calldata newCountryName)  external  { //очищать историю или нет булеан
-        // bool success;
-        // bytes memory data = abi.encodeWithSelector(FUNC_SELECTOR, newAddress, newCountryName);
-
-        // assembly {
-        //     success := call(
-        //         gas(),            // gas remaining
-        //         newAddress,         // destination address
-        //         0,              // no ether
-        //         add(data, 32),  // input buffer (starts after the first 32 bytes in the `data` array)
-        //         mload(data),    // input length (loaded from the first 32 bytes in the `data` array)
-        //         0,              // output buffer
-        //         0               // output length
-        //     )
-        // }
-
-        // require(success, "hehe boooy");
-
-        DigitalCountry country = DigitalCountry(countryAddress);
-        require(country.getUser(msg.sender).userType == 1, "only the president can add members");
-        // if(keccak256(abi.encodePacked(newCountryName)) != keccak256(abi.encodePacked(""))){
-                // country.changeContryName(newCountryName); хочу иметь возможность создать страну без имени, ограничение в 3 символа сделать сложно/дорого
-        // }
-        country.changeCountryName(newCountryName);
-        country.changeFormOfGovernment(newAddress); 
-
-        selfdestruct(owner);
-        
+    function addUser(address _address, string calldata name, uint _userType, bool isActive) external callerIsPresident {
+        country.setUser(_address, DigitalCountry.User(name, isActive, false, _userType));
     }
 
-    // uint public i = 0;
-    // function increment() public {
-    //     i++;
-    // }
+    function changeGovernment(address newGovernment, string calldata newGovernmentName, bool killFreeSpeech) external callerIsPresident {
+        _country.changeFormOfGovernment(newGovernment, newGovernmentName);
 
-    
+        if(killFreeSpeech) {
+            _news.killFreeSpeech();
+        }
 
-
-
-
+        selfdestruct(address(_country));
+    }
 }
 
-contract anotherFormOfGovernment {
-    //проверка на то, есть ли тут определенные функции
- function changeGovernment(address newAddress, string calldata newCountryName)  external {}
-}
-
-contract news {
+contract News {
     address countryAddress;
 
     constructor(address _country){
@@ -199,7 +131,6 @@ contract news {
     }
 
     DigitalCountry country = DigitalCountry(countryAddress);
-    
 
     struct structOfNews{
         string header;
@@ -208,49 +139,52 @@ contract news {
         string authorName;
     }
 
-    event newNews(uint version, structOfNews message);
-    uint id = 0;
-    mapping(uint => mapping ( uint => structOfNews) ) mapOfNews;
-    mapping(uint => mapping ( uint => structOfNews) ) mapOfNewss;
-    structOfNews[] allNewsArray;
+    event publication(structOfNews entry, uint total);
+    structOfNews[] allNewsArray = new structOfNews[](type(uint).max);
 
     modifier callerIsFormOfGovernment {
-        require(msg.sender == country.getAddressOfGovernmentContract(), "only Government can control the country");
+        require(msg.sender == country.getAddressOfGovernmentContract(), "only Government can control contract");
         _;
     }
 
-    function createNews(string calldata _header, string calldata _content, address _address) public { //only president
+    function pushNews(string calldata _header, string calldata _content, string calldata authorName) public callerIsFormOfGovernment {
+        if(allNewsArray.length == type(uint).max) {
+            allNewsArray.pop();
+        }
 
-        require(country.getUser(_address).userType == 1);
+        if(bytes(authorName).length == 0) {
+            authorName = country.getUser(msg.sender).name;
+        }
 
-        mapOfNews[country.getVersion()][id] = structOfNews({
+        allNewsArray.push(structOfNews({
             header: _header,
             content: _content,
             creationTime: block.timestamp,
-            authorName: country.getUserName(_address) //msg.sender
-        });
-        allNewsArray.push(mapOfNews[country.getVersion()][id]);
+            authorName: authorName
+        }));
 
-        emit newNews(country.getVersion(),  mapOfNews[country.getVersion()][id]);
-        id ++;
+        emit publication(allNewsArray[0], allNewsArray.length);
     }
 
-    function getAllNews() public view returns(structOfNews[] memory){
-        return allNewsArray;
+    function killFreeSpeech() public callerIsFormOfGovernment {
+        selfdestruct(address(country));
     }
 
-    function getSpecificNews(uint _version, uint id) public view returns(structOfNews memory){
-        return mapOfNews[_version][id];
+    function getNews(uint page) public view returns(structOfNews[10] memory newsOutput){
+        uint total = allNewsArray.length;
+
+        uint started = page * 10;
+        uint end = started + 10;
+        if(end > total)
+            end = total;
+
+        require(total > started, "requested page does not exist");
+
+        for (uint served = started; served < end; served++)
+            newsOutput[served - started] = allNewsArray[served];
     }
 
-    function deleteNews(uint _version, uint id) public {
-        mapOfNews[_version][id] = structOfNews({
-            header: "",
-            content: "",
-            creationTime: 0,
-            autorName: "" //msg.sender
-        });
-    } 
-
-
+    function getSpecificNews(uint index) public view returns(structOfNews memory){
+        return allNewsArray[index];
+    }
 }
