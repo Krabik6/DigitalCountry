@@ -1,64 +1,46 @@
-import { Outlet, Link } from 'react-router-dom';
-import { ethers } from 'ethers';
-import countryAbi from '../artifacts/contracts/DigitalCountry.sol/DigitalCountry.json'
-import { useState } from 'react';
+import {useState} from 'react';
 
-// const nameOfGovermens = 'DigitalCountry';
-const numOfMembers = 123;
-const presidentName = ['Leva,', ' ', 'Andrey'];
+export const Statistics = () => {
+    // async function requestAccount() {
+    //   await window.ethereum.request({ method: 'eth_requestAccounts' });
+    // }
+    const [st, setSt] = useState({
+        countryName: "",
+        countryGeneration: 0,
+        currentGovernmentAddress: "",
+        currentGovernmentName: "",
+    })
 
-const countryAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+    window.blockchain.getInfo().then(info => {
+        setSt(info);
+    });
 
-const  About = () => {
-  // async function requestAccount() {
-  //   await window.ethereum.request({ method: 'eth_requestAccounts' });
-  // }
-  const [countryName, setcountryName] = useState()
-    const [version, setVersion] = useState()
-    const [address, setAddress] = useState()
-  async function getCountryName() {
-    if (typeof window.ethereum !== 'undefined') {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const country = new ethers.Contract(countryAddress, countryAbi.abi, provider)
-      try {
-        const cName = await country.getCountryName()
-        setcountryName(cName)
+    const label = (name, text) => (
+        <div className="flex items-center pb-2">
+            <div className="font-semibold mr-5 text-3xl capitalize">
+                {name}
+            </div>
+            <div className="text-2xl">
+                {String(text)}
+            </div>
+        </div>
+    );
 
-        const cAddress = await country.getFormAddress()
-        setAddress(cAddress)
-        
-        const cVersion = await country.getCountryVersion()
-        setVersion( Number(cVersion))
-      } catch (err) {
-        console.log("Error: ", err)
-      }
-    }    
-  }
-  getCountryName()
+    return (
+        <div>
+            <h1 className='text-7xl font-bold mb-10'>Country statistics</h1>
 
+            {label("Country name", st.countryName)}
+            {label("government name", st.currentGovernmentName)}
 
-  return (
-    <div className='aboutpage-main'>
-      <div className='aboutpage-inner'>
-        <h1>Current form of goverment</h1>
-        <h2>Name: {countryName}</h2>
-        <h2>Version: {version}</h2>
-        <h2>Address: {address}</h2>
-        <h2>Number of members: {numOfMembers}</h2>
-        <h2>President(s): {presidentName}</h2>
-        <Link to='/posts'>
-          <h3 id='link-to-blog'>Blog</h3>
-        </Link>
-        {/* <button onClick={() => requestAccount()}>connect</button> */}
+            {label("generation", st.countryGeneration)}
+            {/*todo!!!!*/}
+            {label("population", 1)}
 
-        {/* <Routes>
-                <Route path="contacts" element={<p>Our contact</p>} />
-                <Route path="team" element={<p>Our team</p>} />
-            </Routes> */}
-        <Outlet />
-      </div>
-    </div>
-  );
+            {/* <Routes>
+            <Route path="contacts" element={<p>Our contact</p>} />
+            <Route path="team" element={<p>Our team</p>} />
+        </Routes> */}
+        </div>
+    );
 };
-
-export { About };

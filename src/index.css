@@ -1,150 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 :root {
-  --color-bg: #2C2C32;
-  --color-active: #0f7dc6;
+    --color-active: #0f7dc6;
 }
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-header {
-  background-color: var(--color-bg);
-  padding: 2rem 0;
-  text-align: center;
-}
-header > a {
-  color: white;
-  text-decoration: none;
-  padding: 0 1rem;
-}
 header > a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 h1 {
-  text-align: center;
-  margin-top: 0;
+    text-align: center;
+    margin-top: 0;
 }
 
 .container {
-  max-width: 900px;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  margin: 0 auto;
+    max-width: 900px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    margin: 0 auto;
 }
 
 main {
-  min-height: calc(100vh - 85px - 22px);
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
+    min-height: calc(100vh - 85px - 22px);
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
 }
 
 main a {
-  text-decoration: none;
-  color: var(--color-bg);
+    text-decoration: none;
+    color: var(--color-bg);
 }
+
 main a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .active {
-  color: var(--color-active);
-  cursor: default;
-}
-
-.homepage-main .aboutpage-main{
-  display: flex;
-  width: 100%;
-  height: 100%;
+    color: var(--color-active);
+    cursor: default;
 }
 
 .homepage-inner {
-  /* width: 70%; */
-  font-size: 30px;
-  margin: auto;
-  padding-top: 25%;
+    /* width: 70%; */
+    font-size: 30px;
+    margin: auto;
+    padding-top: 25%;
 }
 
 .homepage-inner h3 {
-  text-align: center;
-  margin-top: 0;
+    text-align: center;
+    margin-top: 0;
 }
 
 .homepage-inner h2 {
-  font-size: 31px;
-  text-align: center;
-  margin-top: 0;
+    font-size: 31px;
+    text-align: center;
+    margin-top: 0;
 
 }
 
-.aboutpage-inner {
-  font-size: 30px;
-}
-
-.aboutpage-inner h2{
-  font-size: 25px;
+.aboutpage-inner h2 {
+    font-size: 25px;
 }
 
 #link-to-blog {
-color: rgb(146, 24, 164);
+    color: rgb(146, 24, 164);
 }
 
- .blockpage-pagination ul {
-  color: rgb(0, 0, 0);
-  list-style: none;
-  /* display: inline-block; */
-  display: flex;
+.blockpage-pagination ul {
+    color: rgb(0, 0, 0);
+    list-style: none;
+    /* display: inline-block; */
+    display: flex;
 
 }
 
-.blockpage-pagination ul li{
- 
-  padding: 5px 10px 5px 10px;
-  border: 2px solid #0f7dc6;
-  cursor: pointer;
+.blockpage-pagination ul li {
+
+    padding: 5px 10px 5px 10px;
+    border: 2px solid #0f7dc6;
+    cursor: pointer;
 
 }
 
 .blockpage-pagination ul li:hover {
-  color: rgb(255, 255, 255);
-  background-color: rgb(114, 106, 106);
+    color: rgb(255, 255, 255);
+    background-color: rgb(114, 106, 106);
 }
 
-.blockpage-news ul li{
-  text-align: center;
-  margin-top: 0;
+.blockpage-news ul li {
+    text-align: center;
+    margin-top: 0;
 }
 
 .account-nft-name {
-  height: 100%;
-  width: 350px;
-  text-align: center;
-  font-size: 37px;
-  padding: 5px 10px 5px 10px;
-  /* border: 2px solid #0f7dc6; */
+    height: 100%;
+    width: 350px;
+    text-align: center;
+    font-size: 37px;
+    padding: 5px 10px 5px 10px;
+    /* border: 2px solid #0f7dc6; */
 }
 
 /* .account-nft-name-border{
@@ -155,28 +139,28 @@ color: rgb(146, 24, 164);
 } */
 
 .account-nft-name img {
-  object-fit: cover;
-  width: 300px;
-  height: 300px;
-  text-align: center;
-  margin-top: 0;
-  margin: 0px;
+    object-fit: cover;
+    width: 300px;
+    height: 300px;
+    text-align: center;
+    margin-top: 0;
+    margin: 0px;
 }
 
-.account-nft-name h1{
-  margin: 0px;
+.account-nft-name h1 {
+    margin: 0px;
 }
 
 .account-main {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  /* color: aqua; */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    /* color: aqua; */
 
 }
 
 .account-inner {
-  /* color: darkgoldenrod; */
-  margin-left: 3%;
+    /* color: darkgoldenrod; */
+    margin-left: 3%;
 }
 

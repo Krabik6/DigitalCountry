@@ -1,22 +1,24 @@
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
 const Homepage = () => {
-  return (
-    <div className='homepage-main'>
-      <div className='homepage-inner'>
-        <h1>Digital country</h1>
-        <h2>
-          Unite a group of people and give them the opportunity to change the
-          rules on the go.
-        </h2>
-        <h2>
-          information about mechanisms of digital country//
-        </h2>
+    return (
+        <div className="mt-[37%] text-2xl">
 
-        <Link to="/about"><h3>About</h3></Link>
-      </div>
-    </div>
-  );
+            <h1 className="font-bold text-6xl">
+                Digital country
+            </h1>
+            <p className="mt-8 text-center">
+                Unite a group of people and give them the opportunity to change the
+                rules on the go.
+            </p>
+
+            <p className="mt-20">
+                Learn more or see <Link to="/statistics">statistics</Link>
+            </p>
+
+
+        </div>
+    );
 };
 
-export { Homepage };
+export {Homepage};

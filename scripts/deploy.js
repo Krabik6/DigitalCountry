@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const ethers = hre.ethers
-const formAbi = require("../artifacts/contracts/DigitalCountry.sol/BoeingFormOfGovernment.json")
-const newsAbi = require("../artifacts/contracts/DigitalCountry.sol/News.json")
+const formAbi = require("../src/artifacts/contracts/DigitalCountry.sol/BoeingFormOfGovernment.json")
+const newsAbi = require("../src/artifacts/contracts/DigitalCountry.sol/News.json")
 // const countryAbi = require("../artifacts/contracts/DigitalCountry.sol/DigitalCountry.json")
 
 async function main() {
