@@ -15,7 +15,7 @@ export const Layout = () => {
                         <span className={navStylesShared}>
                             Government Resources
                         </span>
-                        <NavLink className={navStylesShared} to="/posts">Blog</NavLink>
+                        <NavLink className={navStylesShared} to="/posts/1">Blog</NavLink>
                     </div>
 
                     <div>

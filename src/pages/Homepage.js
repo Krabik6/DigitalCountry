@@ -1,9 +1,9 @@
 import {Link} from 'react-router-dom';
+import {useState} from "react";
 
 const Homepage = () => {
     return (
-        <div className="mt-[37%] text-2xl">
-
+        <div className="mt-[20%] text-2xl">
             <h1 className="font-bold text-6xl">
                 Digital country
             </h1>

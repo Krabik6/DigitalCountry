@@ -28,7 +28,7 @@ export const Statistics = () => {
 
     return (
         <div>
-            <h1 className='text-7xl font-bold mb-10'>Country statistics</h1>
+            <h1 className='text-7xl font-bold mb-10 capitalize'>Country statistics</h1>
 
             {label("Country name", st.countryName)}
             {label("government name", st.currentGovernmentName)}
