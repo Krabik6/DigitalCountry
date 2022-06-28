@@ -96,7 +96,7 @@ contract DigitalCountry{
 }
 
 // http://abstractconstruction.com/projects/boeing/
-contract BoeingFormOfGovernment
+contract BoeingFormOfGovernment {
     News _news;
     DigitalCountry _country;
 
