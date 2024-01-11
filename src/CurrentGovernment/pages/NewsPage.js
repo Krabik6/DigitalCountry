@@ -1,8 +1,8 @@
 // // import { Link, useSearchParams } from 'react-router-dom';
-import React, {useState} from 'react';
-
-import {Link} from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {Link, useLocation, useParams, useNavigate} from "react-router-dom";
 import {NewsItem} from "../../components/NewsItem";
+
 
 
 // const scouts = ["levi", "hange", "erwin", "petra", "oruo", "miche"]
@@ -25,6 +25,10 @@ import {NewsItem} from "../../components/NewsItem";
 // export {NewsPage}
 
 const NewsPage = () => {
+    const {pageNumber} = useParams();
+    const {pathname} = useLocation();
+    const navigate = useNavigate();
+
     const [st, setSt] = useState({
         countryName: "",
         countryGeneration: 0,
@@ -35,10 +39,23 @@ const NewsPage = () => {
     const [items, setItems] = useState([]);
 
 
-    window.blockchain.getInfo().then(info => {
-        setSt(info);
-    });
 
+    const pageNumberInt = parseInt(pageNumber);
+    const doRedirect = isNaN(pageNumberInt) || pageNumberInt.toString().length !== pageNumber.length;
+
+    useEffect(() => {
+        if(doRedirect) {
+            navigate(pathname.slice(0, pathname.length - pageNumber.length) + '1', {replace: true});
+        } else {
+            window.blockchain.getInfo().then(info => {
+                setSt(info);
+            });
+
+            window.blockchain.getNews(pageNumberInt).then(news => {
+                setItems(news);
+            });
+        }
+    });
 
 
     return (

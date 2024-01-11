@@ -1,8 +1,26 @@
-import {Outlet, NavLink} from 'react-router-dom';
+import {Outlet, NavLink, useLocation} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Blockchain} from "../blockchain";
 // import { CustomLink } from './CustomLink'
 // import { NavLink } from 'react-router-dom';
 export const Layout = () => {
     const navStylesShared = "p-3 text-white text-xl ";
+
+    const {pathname} = useLocation();
+    const [isGood, setIsGood] = useState(window.blockchain instanceof Blockchain);
+
+    window.setIsGood = setIsGood;
+
+    if(pathname !== '/' && !( window.blockchain instanceof Blockchain ) ) {
+        return (
+            <div>
+                rendering this bitch
+            </div>
+        )
+    }
+    
+
+
 
     return (
         <>
@@ -15,7 +33,7 @@ export const Layout = () => {
                         <span className={navStylesShared}>
                             Government Resources
                         </span>
-                        <NavLink className={navStylesShared} to="/posts/1">Blog</NavLink>
+                        <NavLink className={navStylesShared} to="/government/news/page/main">Blog</NavLink>
                     </div>
 
                     <div>
